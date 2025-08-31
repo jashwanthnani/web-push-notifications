@@ -1,35 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import { subscribeUser, sendNotification } from "./api";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
+  const registerServiceWorker = async () => {
+    if ("serviceWorker" in navigator && "PushManager" in window) {
+      const registration = await navigator.serviceWorker.register("/service-worker.js");
+      console.log("Service Worker registered:", registration);
+
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
+      });
+
+      await subscribeUser(subscription);
+      setIsSubscribed(true);
+      alert("✅ Notifications Enabled!");
+    } else {
+      alert("❌ Push notifications are not supported in this browser.");
+    }
+  };
+
+  const handleSendNotification = async () => {
+    await sendNotification();
+    alert("📩 Notification Sent (check top-right corner)");
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="p-6 text-center">
+      <h1 className="text-2xl font-bold mb-4">🔔 Push Notification Demo</h1>
+      <button
+        onClick={registerServiceWorker}
+        disabled={isSubscribed}
+        className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+      >
+        {isSubscribed ? "✅ Notifications Enabled" : "Enable Notifications"}
+      </button>
+      <button
+        onClick={handleSendNotification}
+        className="bg-green-500 text-white px-4 py-2 rounded"
+      >
+        Send Test Notification
+      </button>
+    </div>
+  );
 }
 
-export default App
+export default App;
