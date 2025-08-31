@@ -16,7 +16,7 @@ VAPID_PRIVATE_KEY = os.getenv("VAPID_PRIVATE_KEY")
 VAPID_EMAIL = os.getenv("VAPID_EMAIL", "mailto:jashwanthbavandlapalli@gmail.com")
 
 if not VAPID_PUBLIC_KEY or not VAPID_PRIVATE_KEY:
-    raise ValueError("⚠️ Missing VAPID keys in .env file")
+    raise ValueError(" Missing VAPID keys in .env file")
 
 # FastAPI app setup
 app = FastAPI()
@@ -40,7 +40,7 @@ class Subscription(BaseModel):
 
 @app.get("/")
 def root():
-    return {"message": "FastAPI Push Notification Backend is running 🚀"}
+    return {"message": "FastAPI Push Notification Backend is running "}
 
 @app.get("/vapid_public_key")
 def get_vapid_key():
@@ -52,13 +52,13 @@ async def subscribe(subscription: Subscription):
     """Save subscription sent from frontend"""
     if subscription.dict() not in subscriptions:
         subscriptions.append(subscription.dict())
-    return {"message": "✅ Subscription saved!"}
+    return {"message": " Subscription saved!"}
 
-@app.post("/send_notification")
+@app.post("/send-notification")
 async def send_notification(request: Request):
     """Send notification to all subscribers"""
     data = await request.json()
-    payload = data.get("message", "Hello from FastAPI 👋")
+    payload = data.get("message", "Hello from FastAPI ")
 
     failed = []
     for sub in subscriptions:
@@ -70,7 +70,7 @@ async def send_notification(request: Request):
                 vapid_claims={"sub": VAPID_EMAIL},
             )
         except WebPushException as ex:
-            print("❌ WebPush error:", repr(ex))
+            print(" WebPush error:", repr(ex))
             failed.append(sub)
 
     return JSONResponse(
