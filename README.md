@@ -6,6 +6,11 @@
 - Node.js (optional, if bundling frontend)
 
 ---
+## Technologies
+
+- **Backend:** FastAPI, Python, pywebpush  
+- **Frontend:** Vite + React, JavaScript, Service Worker  
+- **Other:** dotenv for environment variables
 
 ## 📦 Installation
 
